@@ -11,7 +11,7 @@ function ProductList() {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch('http://localhost:3000/products');
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products`);
       const data = await res.json();
       setProducts(data);
     } catch (error) {
@@ -27,7 +27,7 @@ function ProductList() {
   const handleDelete = async (id) => {
     if (!window.confirm('Are you sure you want to delete this product?')) return;
     try {
-      const res = await fetch(`http://localhost:3000/products/${id}`, { method: 'DELETE' });
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/${id}`, { method: 'DELETE' });
       if (res.ok) {
         setProducts(products.filter((p) => p.id !== id));
       } else {
@@ -61,7 +61,7 @@ const handleEditSave = async (id) => {
       image_url: editForm.image_url, // ✅ mapping key here
     };
 
-    const res = await fetch(`http://localhost:3000/products/${id}`, {
+    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/${id}`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(payload),
