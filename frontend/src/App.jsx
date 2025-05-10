@@ -1,35 +1,63 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useState } from 'react';
+import ProductForm from './components/ProductForm';
+import ProductList from './components/ProductList';
+import { ShoppingBag, Plus, Moon } from 'lucide-react';
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [activeTab, setActiveTab] = useState('form');
 
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+    <div className="min-h-screen bg-gray-900 p-4 text-gray-200">
+      <header className="max-w-4xl mx-auto flex items-center justify-between mb-8">
+        <h1 className="text-3xl font-bold text-white flex items-center">
+          <ShoppingBag className="mr-3 text-blue-400" />
+          StoreManager
+        </h1>
+        
+      </header>
+      
+      <div className="max-w-4xl mx-auto mb-6 bg-gray-800 p-1 rounded-lg border border-gray-700">
+        <div className="grid grid-cols-2 gap-1">
+          <button
+            onClick={() => setActiveTab('form')}
+            className={`px-4 py-3 rounded-md font-medium transition-colors flex items-center justify-center transform transition-transform active:scale-98 ${
+              activeTab === 'form' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <Plus size={18} className="mr-2" />
+            Add Product
+          </button>
+          <button
+            onClick={() => setActiveTab('list')}
+            className={`px-4 py-3 rounded-md font-medium transition-colors flex items-center justify-center transform transition-transform active:scale-98 ${
+              activeTab === 'list' 
+                ? 'bg-blue-600 text-white' 
+                : 'bg-gray-800 text-gray-400 hover:text-gray-200'
+            }`}
+          >
+            <ShoppingBag size={18} className="mr-2" />
+            My Products
+          </button>
+        </div>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+
+      <div className="animate-fadeIn">
+        {activeTab === 'form' ? <ProductForm /> : <ProductList />}
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.3s ease-out forwards;
+        }
+      `}</style>
+    </div>
+  );
 }
 
-export default App
+export default App;
