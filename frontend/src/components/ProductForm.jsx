@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Plus } from 'lucide-react';
-
+import { useProductContext } from '../context/productContext';
 function ProductForm() {
   const [form, setForm] = useState({
     name: '',
@@ -9,39 +9,33 @@ function ProductForm() {
     image_url: '',
   });
   const [submitting, setSubmitting] = useState(false);
-
+ 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setSubmitting(true);
-    
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name: form.name,
-          price: parseFloat(form.price),
-          description: form.description,
-          image_url: form.image_url
-        }),
-      });
-      console.log(form.image_url)
-      if (res.ok) {
-        alert('Product submitted!');
-        setForm({ name: '', price: '', description: '', image_url: '' });
-      } else {
-        throw new Error("Failed to submit");
-      }
-    } catch (error) {
-      alert('Error submitting product');
-    } finally {
-      setSubmitting(false);
-    }
-  };
+ const { addProduct } = useProductContext();
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setSubmitting(true);
+
+  const result = await addProduct({
+    name: form.name,
+    price: parseFloat(form.price),
+    description: form.description,
+    image_url: form.image_url,
+  });
+
+  if (result.success) {
+    alert('Product submitted!');
+    setForm({ name: '', price: '', description: '', image_url: '' });
+  } else {
+    alert('Error submitting product');
+  }
+
+  setSubmitting(false);
+};
 
   return (
     <div className="max-w-md mx-auto animate-fadeIn">

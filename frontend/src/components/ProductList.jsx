@@ -1,39 +1,22 @@
 import { useEffect, useState } from 'react';
 import { Search, Trash2, Edit, Save, X } from 'lucide-react';
-
+import { useProductContext } from '../context/productContext';
 function ProductList() {
-  const [products, setProducts] = useState([]);
+
   const [search, setSearch] = useState('');
-  const [loading, setLoading] = useState(true);
+
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', price: '', description: '', image_url: '' });
-
-  const fetchProducts = async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products`);
-      const data = await res.json();
-      setProducts(data);
-    } catch (error) {
-      console.error("Failed to fetch products:", error);
-    }
-    setLoading(false);
-  };
+  const { products, fetchProducts, deleteProduct,editProduct, loading } = useProductContext();
+ 
 
   useEffect(() => {
     fetchProducts();
   }, []);
 
   const handleDelete = async (id) => {
-    if (!window.confirm('Are you sure you want to delete this product?')) return;
-    try {
-      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/${id}`, { method: 'DELETE' });
-      if (res.ok) {
-        setProducts(products.filter((p) => p.id !== id));
-      } else {
-        throw new Error("Failed to delete");
-      }
-    } catch (error) {
+    const result = await deleteProduct(id);
+    if (!result.success) {
       alert('Error deleting product');
     }
   };
@@ -53,31 +36,21 @@ function ProductList() {
   };
 
 const handleEditSave = async (id) => {
-  try {
     const payload = {
       name: editForm.name,
       price: editForm.price,
       description: editForm.description,
-      image_url: editForm.image_url, // ✅ mapping key here
+      image_url: editForm.image_url,
     };
 
-    const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/products/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
+    const result = await editProduct(id, payload);
 
-    if (res.ok) {
-      const updatedProduct = await res.json();
-      setProducts(products.map(p => (p.id === id ? updatedProduct : p)));
+    if (result.success) {
       setEditingId(null);
     } else {
-      throw new Error("Failed to update");
+      alert('Error updating product');
     }
-  } catch (error) {
-    alert('Error updating product');
-  }
-};
+  };
 
 
   const filteredProducts = products.filter(
