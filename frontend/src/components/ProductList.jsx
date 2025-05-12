@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import { Search, Trash2, Edit, Save, X } from 'lucide-react';
 import { useProductContext } from '../context/productContext';
+
 function ProductList() {
 
   const [search, setSearch] = useState('');
-
   const [editingId, setEditingId] = useState(null);
   const [editForm, setEditForm] = useState({ name: '', price: '', description: '', image_url: '' });
   const { products, fetchProducts, deleteProduct,editProduct, loading } = useProductContext();
@@ -51,13 +51,40 @@ const handleEditSave = async (id) => {
       alert('Error updating product');
     }
   };
+const parseSmartSearch = (query) => {
+  const lower = query.toLowerCase();
+  let priceFilter = null;
+
+  if (lower.includes('under')) {
+    const match = lower.match(/under\s+(\d+)/);
+    if (match) priceFilter = { type: 'under', value: parseFloat(match[1]) };
+  } else if (lower.includes('above')) {
+    const match = lower.match(/above\s+(\d+)/);
+    if (match) priceFilter = { type: 'above', value: parseFloat(match[1]) };
+  }
+
+  // remove price-related words for clean keyword search
+  const cleanedKeyword = lower.replace(/(under|above)\s+\d+/gi, '').trim();
+
+  return { keyword: cleanedKeyword, priceFilter };
+};
+
+const { keyword, priceFilter } = parseSmartSearch(search);
 
 
-  const filteredProducts = products.filter(
-    (product) =>
-      product.name?.toLowerCase().includes(search.toLowerCase()) ||
-      product.description?.toLowerCase().includes(search.toLowerCase())
-  );
+const filteredProducts = products.filter((product) => {
+  const matchesKeyword =
+    product.name?.toLowerCase().includes(keyword) ||
+    product.description?.toLowerCase().includes(keyword);
+
+  const matchesPrice =
+    !priceFilter ||
+    (priceFilter.type === 'under' && product.price <= priceFilter.value) ||
+    (priceFilter.type === 'above' && product.price >= priceFilter.value);
+
+  return matchesKeyword && matchesPrice;
+});
+
 
   return (
     <div className="max-w-4xl mx-auto">
