@@ -58,7 +58,7 @@ const handleSubmit = async (e) => {
           </div>
           
           <div className="mb-4">
-            <label className="block text-gray-300 mb-2">Price ($)</label>
+            <label className="block text-gray-300 mb-2">Price (₹)</label>
             <input 
               name="price" 
               type="number" 

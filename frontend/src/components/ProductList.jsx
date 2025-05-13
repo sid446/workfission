@@ -161,7 +161,7 @@ const filteredProducts = products.filter((product) => {
                     )}
                     <div className="flex-1">
                       <h2 className="text-xl font-bold text-white">{product.name}</h2>
-                      <p className="text-blue-400 font-semibold my-2">${product.price}</p>
+                      <p className="text-blue-400 font-semibold my-2">₹{product.price}</p>
                       <p className="text-gray-300">{product.description}</p>
                     </div>
                   </>
