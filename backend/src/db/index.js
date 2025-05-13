@@ -7,6 +7,9 @@ const { Client } = pkg;
 
 const client = new Client({
   connectionString: process.env.DATABASE_URI,
+  ssl: {
+    rejectUnauthorized: false, // required by most cloud PostgreSQL providers like Neon
+  },
 });
 
 client.connect()
